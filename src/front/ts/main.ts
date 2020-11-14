@@ -5,7 +5,14 @@
  * Project: DAW - CEIoT - Project Structure
  * Brief: Main frontend file (where the logic is)
 =============================================================================*/
-
+interface DeviceInt
+{
+    id:string;
+    name:string;
+    description:string;
+    state:string;
+    type:string;
+}
     
     class Main implements EventListenerObject, GETResponseListener{
         
@@ -40,12 +47,10 @@
                 }
     handleGETResponse(status: number, response: string): void {
         console.log("Respujesta del servidor: "+ response)
-               
+        let data: Array<DeviceInt> = JSON.parse (response);       
+        console.log (data);
                 }
-
-
-    
-}
+    }
 
 
 
