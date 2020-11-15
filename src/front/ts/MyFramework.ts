@@ -8,83 +8,104 @@ interface POSTResponseListener
     handlePOSTResponse(status:number, response:string):void;
 }
 
-class MyFramework
-{
-    getElementById(id:string):HTMLElement
-    {
-        let e:HTMLElement;
+interface DELETEResponseListener {
+    handleDelete(status: number, response: string, id: string): void;
+}
+
+type DeleteRequest = {
+    id: string;
+}
+type UpdateRequest = {
+    id: string;
+    state: boolean;
+}
+
+class MyFramework {
+    private xhr: XMLHttpRequest;
+
+    constructor() {
+
+        this.xhr = new XMLHttpRequest();
+    }
+
+
+    getElementById(id: string): HTMLElement {
+        let e: HTMLElement;
         e = document.getElementById(id);
         return e;
     }
 
-    getElementByEvent(evt:Event):HTMLElement
-    {
+    getElementByEvent(evt: Event): HTMLElement {
         return <HTMLElement>evt.target;
     }
 
-    requestGET(url:string, listener: GETResponseListener):void
-    {
-        let xhr: XMLHttpRequest;
-        xhr = new XMLHttpRequest();
+    requestGET(url: string, listener: GETResponseListener): void {
 
-        xhr.onreadystatechange = function()
-        {
-            if(xhr.readyState == 4)
-            {
-                if(xhr.status == 200)
-                {
-                    listener.handleGETResponse(xhr.status,xhr.responseText);
-                }
-                else
-                {
-                    listener.handleGETResponse(xhr.status,null);
+
+        this.xhr.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    listener.handleGETResponse(this.status, this.responseText);
+                } else {
+                    listener.handleGETResponse(this.status, null);
                 }
             }
         };
-        
-        xhr.open('GET', url, true);
-        xhr.send(null);
+
+        this.xhr.open('GET', url, true);
+        this.xhr.send(null);
     }
 
-    requestPOST(url:string, data:object, listener:POSTResponseListener):void
-    {
-        let xhr: XMLHttpRequest;
-        xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function()
-        {
-            if(xhr.readyState == 4)
-            {
-                if(xhr.status == 200)
-                {
-                    listener.handlePOSTResponse(xhr.status,xhr.responseText);
-                }
-                else
-                {
-                    listener.handlePOSTResponse(xhr.status,null);
+    requestPOST(url: string, data: UpdateRequest, listener: POSTResponseListener): void {
+        this.xhr.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    listener.handlePOSTResponse(this.status, this.responseText);
+                } else {
+                    listener.handlePOSTResponse(this.status, null);
                 }
             }
         };
-        
-        xhr.open('POST', url);
+
+        this.xhr.open('POST', url);
 
         // envio JSON en body de request (Usar con NODEJS)
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.send(JSON.stringify(data));
+        this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        this.xhr.send(JSON.stringify(data));
         //______________________________
         // envio Formdata en body de request (Usar con Apache,PythonWS,etc.)
         //let formData:FormData = new FormData();
         //for (let key in data) {
-            //formData.append(key, data[key]);
+        //formData.append(key, data[key]);
         //}
-        
+
         //xhr.send(formData);
         //______________________________
     }
 
-    configEventLister (event:string, id:string, listener:EventListenerObject):void
-    {
-        let b:HTMLElement = document.getElementById (id);
-        b.addEventListener (event,listener);
+    requestDelete(url: string, data: DeleteRequest, listener: DELETEResponseListener) {
+        this.xhr.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    listener.handleDelete(this.status, this.responseText, data.id);
+                } else {
+                    console.log("not found");
+                }
+            }
+        };
+  
+
+        this.xhr.open('DELETE', url);
+
+        // envio JSON en body de request (Usar con NODEJS)
+        this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        this.xhr.send(JSON.stringify(data));
+    }
+
+    
+
+    configEventLister(event: string, id: string, listener: EventListenerObject): void {
+        let b: HTMLElement = document.getElementById(id);
+        b.addEventListener(event, listener);
     }
 }

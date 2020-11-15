@@ -5,106 +5,144 @@
  * Project: DAW - CEIoT - Project Structure
  * Brief: Main frontend file (where the logic is)
 =============================================================================*/
-interface DeviceInt
-{
-    id:number;
-    name:string;
-    description:string;
-    state:number;
-    type:number;
+interface DeviceInt {
+    id: number;
+    name: string;
+    description: string;
+    state: number;
+    type: number;
 }
 
 
-class Main implements EventListenerObject, GETResponseListener, POSTResponseListener
-{
-    myf:MyFramework;
-    view:ViewMainPage;
-    counter:number = 0;
+class Main implements EventListenerObject, GETResponseListener, POSTResponseListener, DELETEResponseListener {
+    myf: MyFramework;
+    view: ViewMainPage;
+    counter: number = 0;
+    devices: Array<DeviceInt>;
 
-    main():void 
-    {
+    main(): void {
         console.log("estoy en main()");
 
-        let usuarios:Array<User>;
+        let usuarios: Array<User>;
         usuarios = new Array<User>();
-        usuarios.push (new User(1, "Mariano", "mariano@gmail.com"));
-        usuarios.push (new User(2, "Juan", "juan@gmail.com"));
-        usuarios.push (new User(3, "Pedro", "pedro@gmail.com"));
+        usuarios.push(new User(1, "Mariano", "mariano@gmail.com"));
+        usuarios.push(new User(2, "Juan", "juan@gmail.com"));
+        usuarios.push(new User(3, "Pedro", "pedro@gmail.com"));
 
-        this.mostrarUsers (usuarios);
+        this.mostrarUsers(usuarios);
 
-        this.myf = new MyFramework ();
-        this.view = new ViewMainPage (this.myf); // Encapsular todo lo que es front 
+        this.myf = new MyFramework();
+        this.view = new ViewMainPage(this.myf); // Encapsular todo lo que es front
 
 
-        this.myf.configEventLister ("click", "boton", this);
-
-        this.myf.requestGET ("http://localhost:8000/dispositivos", this);
-
-        
+        this.myf.requestGET("http://localhost:8000/dispositivos", this);
     }
 
-    mostrarUsers(users:Array<User>):void
-    {
-    //    for (let i in users)
-    //    {
-    //        users[i].printInfo ();
-    //    }
-    //    {
-    //        o.printInfo ();
-   //     }
+    mostrarUsers(users: Array<User>): void {
+        //    for (let i in users)
+        //    {
+        //        users[i].printInfo ();
+        //    }
+        //    {
+        //        o.printInfo ();
+        //     }
     }
 
-    handleEvent(evt: Event): void
-    {
-        console.log (`se hizo "${evt.type}"`);
+    handleEvent(evt: Event): void {
+        console.log(`se hizo "${evt.type}"`);
 
-        let b:HTMLElement = this.myf.getElementByEvent (evt); // QUE ELEMENTO ORigino el evento.
-        console.log (b);
+        let b: HTMLElement = this.myf.getElementByEvent(evt);
+        console.log("element", b);
+        const [action, id] = b.id.split("_");
+        console.log("action", action);
+        console.log("id", id);
 
-        if (b.id == "boton")
-        {
-            this.counter ++;
-            b.textContent = `Click ${this.counter}`;
+        switch (action) {
+
+            case "dev": {
+                const state: boolean = this.view.getSwitchStateById(b.id);
+
+                const data = {"id": id, "state": state};
+                this.myf.requestPOST("http://localhost:8000/dispositivos/estados", data, this);
+                break;
+            }
+
+            case "del": {
+                const data = {"id": id};
+                this.myf.requestDelete("http://localhost:8000/dispositivos", data, this);
+                break;
+            }
+
+            case "edi": {
+                //const device = this.devices.lastIndexOf(id)
+                const device = this.devices.find(d =>  `${d.id}` === id);//funca pero con es6 https://dev.to/wangonya/finding-an-element-in-the-array-the-es5-es6-and-es7-way-7cl
+                this.view.createEditModal(device);
+                let saveButton = this.myf.getElementById(`save_${id}`);
+                saveButton.addEventListener("click", () => {
+                //this.myf.requestPOST("http://localhost:8000/dispositivos/estados", device, this);                   
+
+                    console.log("click guardar por edi");
+                });
+
+                let closeButton = this.myf.getElementById(`close_${id}`);
+                closeButton.addEventListener("click", () => {
+                    // buscar todos los input y hacer un guardar
+                    console.log("cerrar modal");
+                    this.view.closeModal(id);
+                });
+
+
+                break;
+            }
+
         }
-        else 
-        {
-            let state:boolean = this.view.getSwitchStateById (b.id);
+    }
 
-            let data = { "id":`${b.id}`, "state":state };
-            this.myf.requestPOST ("https://cors-anywhere.herokuapp.com/https://postman-echo.com/post", data, this);
-            //this.myf.requestPOST ("Devices.php", data, this);
+
+    handleGETResponse(status: number, response: string): void {
+        console.log("Respuesta del servidor: " + response);
+
+        this.devices = JSON.parse(response) as Array<DeviceInt>;
+
+        console.log(this.devices);
+
+        this.view.showDevices(this.devices);
+
+        for (let d of this.devices) {
+            let b: HTMLElement = this.myf.getElementById(`dev_${d.id}`);
+            b.addEventListener("click", this);
+
+            let del: HTMLElement = this.myf.getElementById(`del_${d.id}`);
+            del.addEventListener("click", this);
+
+            let edi: HTMLElement = this.myf.getElementById(`edi_${d.id}`);
+            edi.addEventListener("click", this);
         }
     }
 
-    handleGETResponse(status: number, response: string): void
-    {
-        console.log ("Respuesta del servidor: " + response);
+    handleDelete(status: number, response: string, id: string): void {
+        switch (status) {
+            case 200: {
+                let row: HTMLElement = this.myf.getElementById(`row_${id}`);
+                row.remove();
+                break;
+            }
 
-        let data: Array<DeviceInt> = JSON.parse (response);
-
-        console.log (data);
-
-        this.view.showDevices (data);
-
-        for (let d of data)
-        {
-            let b:HTMLElement = this.myf.getElementById (`dev_${d.id}`);
-            b.addEventListener ("click", this);
+            default:
+                console.log("Ocurrio un error: ", response)
         }
     }
 
-    handlePOSTResponse(status: number, response: string): void
-    {
-        console.log (status);
-        console.log (response);
+    handlePOSTResponse(status: number, response: string): void {
+        console.log(status);
+        console.log(response);
     }
 }
 
 
 window.onload = () => {
-    let m:Main = new Main ();
-    m.main ();
+    let m: Main = new Main();
+    m.main();
 }
 
 
@@ -117,7 +155,7 @@ let user = "TypesScript Users!";
 function greeter(person) {
     return "Hello, " + person;
 }
- 
+
 // document.body.innerHTML = greeter(user);
 
 console.log("Hola mundo!");

@@ -12,7 +12,6 @@ var PORT    = 3000;
 
 var express = require('express');
 var app     = express();
-var mysql   = require('./mysql-connector');
 
 // to parse application/json
 app.use(express.json()); 
@@ -27,6 +26,7 @@ var conexionMysql = require('./mysql-connector');
 
 
 app.get('/dispositivos', function (req, res, next) {
+    console.log("Contenido de body en get dispositivos",req.body)
     conexionMysql.query('Select * from Devices', function (err, respuesta) {
         if (err) {
             res.send(err).status(400);
@@ -35,7 +35,9 @@ app.get('/dispositivos', function (req, res, next) {
         res.send(respuesta);
     });
 });
+
 app.get('/dispositivos/:id', function (req, res, next) {
+    console.log("Contenido del body by id", req.body);
         conexionMysql.query('Select * from Devices where id=?',[req.params.id],function (err, respuesta) {
             if (err) {
                 res.send(err).status(400);
@@ -43,12 +45,10 @@ app.get('/dispositivos/:id', function (req, res, next) {
             }
             res.send(respuesta);
         });
-
-
-
-  
+});
 
 app.post('/dispositivos/estados', function (req, res, next) {
+    console.log("Update body post/dispositivos/estados ->", req.body);
     conexionMysql.query('Update Devices set state=? where id=?', [req.body.state, req.body.id], function (err, respuesta) {
         if (err) {
             res.send(err).status(400);
@@ -58,13 +58,24 @@ app.post('/dispositivos/estados', function (req, res, next) {
     });
 });
 
+app.del('/dispositivos', function (req, res, next) {
+    console.log("delete body ->", req.body);
+    conexionMysql.query('delete from Devices where id=?', [req.body.id], function (err, respuesta) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(JSON.stringify(respuesta)).status(200);
+    });
+});
+
 //app.get('/dispositivos/:id', function(req, res, next) {
 //    let datosFiltrados= datos.filter((itemDeLaLista)=>{
 //        return itemDeLaLista.id==req.params.id
 //    })
 //
 //    res.json(datosFiltrados);
-});
+
 
 //Espero recibir algo del estilo {id:1,state:1}
 //devuelvo el dato modificado. 
@@ -83,5 +94,3 @@ app.post('/dispositivos/estados', function (req, res, next) {
 app.listen(PORT, function(req, res) {
     console.log("NodeJS API running correctly");
 });
-
-//=======[ End of file ]=======================================================
