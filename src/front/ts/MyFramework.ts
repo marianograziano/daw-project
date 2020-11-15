@@ -15,10 +15,7 @@ interface DELETEResponseListener {
 type DeleteRequest = {
     id: string;
 }
-type UpdateRequest = {
-    id: string;
-    state: boolean;
-}
+
 type UpdateRequest = {
     id: string;
     state: boolean;
