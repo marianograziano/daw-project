@@ -19,6 +19,10 @@ type UpdateRequest = {
     id: string;
     state: boolean;
 }
+type UpdateRequest = {
+    id: string;
+    state: boolean;
+}
 
 class MyFramework {
     private xhr: XMLHttpRequest;
@@ -58,6 +62,11 @@ class MyFramework {
 
     requestPOST(url: string, data: UpdateRequest, listener: POSTResponseListener): void {
         this.xhr.onreadystatechange = function () {
+            //0	UNINITIALIZED	todavía no se llamó a open().
+            //1	LOADING	todavía no se llamó a send().
+            //2	LOADED	send() ya fue invocado, y los encabezados y el estado están disponibles.
+            //3	INTERACTIVE	Descargando; responseText contiene información parcial.
+            //4	COMPLETED	La operación está terminada.
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     listener.handlePOSTResponse(this.status, this.responseText);
@@ -68,8 +77,7 @@ class MyFramework {
         };
 
         this.xhr.open('POST', url);
-
-        // envio JSON en body de request (Usar con NODEJS)
+        
         this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         this.xhr.send(JSON.stringify(data));
         //______________________________
