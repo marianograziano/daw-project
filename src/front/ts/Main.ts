@@ -63,15 +63,15 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
             }
 
             case "add": {
-                const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
-                console.log('Device',device)
-                this.view.createModal(device,  this.saveEditedDevice);
+                //const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
+                //console.log('Device',device)
+                this.view.createAddModal();
                 break;
             }              
             case "edi": {
                 console.log('entro al case');
                 const device = this.devices.find(d =>  `${d.id}` === id);//funca pero con es6 https://dev.to/wangonya/finding-an-element-in-the-array-the-es5-es6-and-es7-way-7cl
-                this.view.createModal(device,this.saveEditedDevice);
+               // this.view.createModal(device,this.saveEditedDevice);
                 break;
             }
 

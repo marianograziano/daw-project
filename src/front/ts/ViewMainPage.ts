@@ -5,7 +5,65 @@ class ViewMainPage {
         this.myf = myf;
     }
 
-    createModal(device: DeviceInt, listener: (device: DeviceInt, modal: HTMLElement) => void): HTMLElement {
+    createAddModal() {
+        console.log("add")
+
+        let e: HTMLElement = this.myf.getElementById("devicesList"); // obtengo el lugar adonde tengo que agregar
+        let modal: HTMLElement = document.createElement("div");
+        modal.setAttribute("class", "modal open");
+        modal.setAttribute("tabindex", "0");
+        modal.setAttribute("style", "z-index: 1003; display: block; opacity: 1; top: 10%; transform: scaleX(1) scaleY(1);");
+
+        modal.innerHTML =
+            `
+            
+            <div class="row">
+            <form>
+                <h4>Agregar Dispositivo</h4>
+                                 
+                <div class="input-field col s12">
+                <input id="device_name" type="text" class="validate">
+                <label for="device_name">Nombre del dispositivo</label>
+                </div><br>
+                <div class="input-field col s12">
+                <input id="device_description" type="text" class="validate">
+                <label class="active" for="device_description">Descripción del Dispositivo</label>
+                </div>     
+                <div class="input-field col s12">
+                <input id="indeterminate-checkbox" type="checkbox" />
+                <span>Dimerizable</span>
+                
+                </div>
+                <div class="switch input-field col s12">
+                <label class="active" for="device_state">Estado del Dispositivo</label>                            
+                <label>
+                                            Off
+                                            <input id="device_state" type="checkbox"> <!-- id para controlar el switch --!> 
+                                            <span class="lever"></span>
+                                            On
+                                            </label>
+                                            
+                </div>
+                <div class="switch input-field col s8">
+                    <label>Dimmer del Dispositivo</label>                            
+                    <p class="range-field">
+                    <input type="range" id="device_dimmer" min="0" max="100" value="30"/>
+                </p>
+                                        
+                </div>
+                                                                 
+            </div>
+             </form>  
+            </div>
+            <div id="modal-footer" class="modal-footer">
+            </div>`;
+
+
+            e.appendChild(modal);
+            return modal;
+    }
+    
+    careateModal(device: DeviceInt, listener: (device: DeviceInt, modal: HTMLElement) => void): HTMLElement {
         let e: HTMLElement = this.myf.getElementById("devicesList"); // obtengo el lugar adonde tengo que agregar
         let modal: HTMLElement = document.createElement("div");
         modal.setAttribute("class", "modal open");
