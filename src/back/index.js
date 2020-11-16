@@ -32,6 +32,7 @@ app.get('/dispositivos', function (req, res, next) {
             res.send(err).status(400);
             return;
         }
+    console.log("Respuesta del query", respuesta)
         res.send(respuesta);
     });
 });
