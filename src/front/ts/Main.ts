@@ -63,47 +63,15 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
             }
 
             case "add": {
-<<<<<<< HEAD
-                
-                const device = this.devices.find(d =>  `${d.id}` === id)
-                console.log(this.devices.values);
-                this.view.createAddModal(device);
-                let saveButton = this.myf.getElementById(`add_${id}`);
-                saveButton.addEventListener("click", () => {
-                //this.myf.requestPOST("http://localhost:8000/dispositivos/estados", device, this);                   
-
-                    console.log("click guardar por edi");
-                });
-=======
                 const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
+                console.log('Device',device)
                 this.view.createModal(device,  this.saveEditedDevice);
                 break;
->>>>>>> d40da119de1a66872b459e42de86632e4f9bbca7
             }              
             case "edi": {
                 console.log('entro al case');
                 const device = this.devices.find(d =>  `${d.id}` === id);//funca pero con es6 https://dev.to/wangonya/finding-an-element-in-the-array-the-es5-es6-and-es7-way-7cl
-<<<<<<< HEAD
-                this.view.createModal(device,'edit');
-                console.log(device);
-                let saveButton = this.myf.getElementById(`save_${id}`);
-                saveButton.addEventListener("click", () => {
-                //this.myf.requestPOST("http://localhost:8000/dispositivos/estados", device, this);                   
-
-                    console.log("click guardar por edi");
-                });
-
-                let closeButton = this.myf.getElementById(`close_${id}`);
-                closeButton.addEventListener("click", () => {
-                    // buscar todos los input y hacer un guardar
-                    console.log("cerrar modal");
-                    this.view.closeModal(id);
-                });
-
-
-=======
                 this.view.createModal(device,this.saveEditedDevice);
->>>>>>> d40da119de1a66872b459e42de86632e4f9bbca7
                 break;
             }
 
@@ -137,14 +105,9 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
             let edi: HTMLElement = this.myf.getElementById(`edi_${dispo.id}`);
             edi.addEventListener("click", this);
         }
-<<<<<<< HEAD
-        let add: HTMLElement = this.myf.getElementById(`add_1`);
-        add.addEventListener("click", this);
-=======
 
         this.myf.getElementById("add_new").addEventListener("click", this);
 
->>>>>>> d40da119de1a66872b459e42de86632e4f9bbca7
     }
 
     handleDelete(status: number, response: string, id: string): void {

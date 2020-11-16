@@ -20,10 +20,6 @@ type UpdateRequest = {
     id: string;
     state: boolean;
 }
-type UpdateRequest = {
-    id: string;
-    state: boolean;
-}
 
 class MyFramework {
     private xhr: XMLHttpRequest;
