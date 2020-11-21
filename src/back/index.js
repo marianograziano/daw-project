@@ -70,6 +70,17 @@ app.del('/dispositivos', function (req, res, next) {
     });
 });
 
+app.put('/dispositivos/:id', function (req, res, next) {
+    console.log("Update body post/dispositivos/ ->", req.body);
+    conexionMysql.query('Update Devices set state=? where id=?', [req.body.state, req.body.id], function (err, respuesta) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send("Se actualizó correctamente: " + JSON.stringify(respuesta)).status(200);
+    });
+});
+
 //app.get('/dispositivos/:id', function(req, res, next) {
 //    let datosFiltrados= datos.filter((itemDeLaLista)=>{
 //        return itemDeLaLista.id==req.params.id

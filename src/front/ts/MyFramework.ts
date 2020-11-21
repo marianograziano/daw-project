@@ -89,11 +89,7 @@ class MyFramework {
 
     requestPOST(url: string, data: UpdateRequest, listener: POSTResponseListener): void {
         this.xhr.onreadystatechange = function () {
-            //0	UNINITIALIZED	todavía no se llamó a open().
-            //1	LOADING	todavía no se llamó a send().
-            //2	LOADED	send() ya fue invocado, y los encabezados y el estado están disponibles.
-            //3	INTERACTIVE	Descargando; responseText contiene información parcial.
-            //4	COMPLETED	La operación está terminada.
+
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     listener.handlePOSTResponse(this.status, this.responseText);
@@ -106,7 +102,9 @@ class MyFramework {
         this.xhr.open('POST', url);
         
         this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        console.log(data)
         this.xhr.send(JSON.stringify(data));
+        console.log(JSON.stringify(data))
         //______________________________
         // envio Formdata en body de request (Usar con Apache,PythonWS,etc.)
         //let formData:FormData = new FormData();
@@ -124,7 +122,7 @@ class MyFramework {
                 if (this.status == 200) {
                     listener.handleDelete(this.status, this.responseText, data.id);
                 } else {
-                    console.log("not found");
+                    console.log("no pudo borrar");
                 }
             }
         };
@@ -144,7 +142,7 @@ class MyFramework {
                 if (this.status == 200) {
                     listener.handlePut(this.status, this.responseText);
                 } else {
-                    console.log("not found / error");
+                    console.log("no pudo put ");
                     listener.handlePut(this.status, this.responseText);
                 }
             }

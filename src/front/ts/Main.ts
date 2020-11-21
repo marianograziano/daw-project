@@ -64,8 +64,8 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
             }
 
             case "add": {
-                const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
-                this.view.createModal(device,  this.saveEditedDevice, this);
+                const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nueva descrp", name: "nuevo nomb"}
+                this.view.createModal(device,this.saveAddedDevice, this);
                 break;
             }              
             case "edi": {
@@ -79,17 +79,26 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
     }
 
     saveEditedDevice(device: DeviceInt, modal: HTMLElement, main: Main) {
-        // hacer request para guardar el dispositivo en la bd
-        console.log("device -> ", device);
+        
+        console.log("device a salvar -> ", device);
         main.devices = main.devices.map(d => d.id === device.id ? device : d);
-        main.myf.requestPUT("http://localhost:8000/dispositivos",device,main);
+        main.myf.requestPUT("http://localhost:8000/dispositivos/:id",device,main);
+        modal.remove();
+    }
+
+    saveAddedDevice(device: DeviceInt, modal: HTMLElement, main: Main) {
+        
+        console.log("Added device -> ", device);
+    //    main.myf.requestPOST("http://localhost:8000/dispositivos",device,main);
         modal.remove();
     }
 
     handlePut(status: number, response: string) {
-        // hacer algo despues del put... 
+        console.log(status);
+        console.log(response);
         this.refreshDevicesView();
     }
+    
 
     handleGETResponse(status: number, response: string): void {
         console.log("Respuesta del servidor: " + response);
