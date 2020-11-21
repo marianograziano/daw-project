@@ -14,13 +14,19 @@ interface DeviceInt {
 }
 
 
-class Main implements EventListenerObject, GETResponseListener, POSTResponseListener, DELETEResponseListener {
+class Main implements EventListenerObject, GETResponseListener, POSTResponseListener, DELETEResponseListener, PUTResponseListener {
     myf: MyFramework;
     view: ViewMainPage;
     // counter: number = 0;
     devices: Array<DeviceInt>;
 
-    main(): void {
+    constructor(framework: MyFramework, view: ViewMainPage) {
+        this.myf = framework;
+        this.view = view;
+    }
+
+
+    start(): void {
         console.log("Metodo main de clase Main");
         //let usuarios: Array<User>;
        // usuarios = new Array<User>();
@@ -30,13 +36,8 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
 
       // this.mostrarUsers(usuarios); 
 
-        this.myf = new MyFramework(); // Framework 
-        this.view = new ViewMainPage(this.myf); // Front
-
-
         this.myf.requestGET("http://localhost:8000/dispositivos", this);
     }
-
 
     handleEvent(evt: Event): void {
         let evtelement: HTMLElement = this.myf.getElementByEvent(evt);
@@ -63,25 +64,31 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
             }
 
             case "add": {
-                //const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
-                //console.log('Device',device)
-                this.view.createAddModal();
+                const device: DeviceInt = {id: null, type: 0,  state: 0, description: "nuevo dispositivo", name: "nuevo dispositivo"}
+                this.view.createModal(device,  this.saveEditedDevice, this);
                 break;
             }              
             case "edi": {
                 console.log('entro al case');
                 const device = this.devices.find(d =>  `${d.id}` === id);//funca pero con es6 https://dev.to/wangonya/finding-an-element-in-the-array-the-es5-es6-and-es7-way-7cl
-               // this.view.createModal(device,this.saveEditedDevice);
+                this.view.createModal(device,this.saveEditedDevice, this);
                 break;
             }
 
         }
     }
 
-    saveEditedDevice(device: DeviceInt, modal: HTMLElement) {
+    saveEditedDevice(device: DeviceInt, modal: HTMLElement, main: Main) {
         // hacer request para guardar el dispositivo en la bd
         console.log("device -> ", device);
+        main.devices = main.devices.map(d => d.id === device.id ? device : d);
+        main.myf.requestPUT("http://localhost:8000/dispositivos",device,main);
         modal.remove();
+    }
+
+    handlePut(status: number, response: string) {
+        // hacer algo despues del put... 
+        this.refreshDevicesView();
     }
 
     handleGETResponse(status: number, response: string): void {
@@ -91,6 +98,11 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
 
         console.log(this.devices);
         
+        this.refreshDevicesView();
+
+    }
+
+    refreshDevicesView() {
         this.view.showDevices(this.devices); // muestro los dispo 
 
         for (let dispo of this.devices) {  // creo los eventos
@@ -107,14 +119,13 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
         }
 
         this.myf.getElementById("add_new").addEventListener("click", this);
-
     }
 
     handleDelete(status: number, response: string, id: string): void {
         switch (status) {
             case 200: {
-                let row: HTMLElement = this.myf.getElementById(`row_${id}`);
-                row.remove();
+                this.devices = this.devices.filter( d => `${d.id}` !== id);
+                this.refreshDevicesView();
                 break;
             }
 
@@ -129,10 +140,10 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
     }
 }
 
-
 window.onload = () => {
-    let m: Main = new Main();
-    m.main();
+    const framework = new MyFramework()
+    let m: Main = new Main(framework, new ViewMainPage(framework));
+    m.start();
 }
 
 

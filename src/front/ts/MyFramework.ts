@@ -12,6 +12,10 @@ interface DELETEResponseListener {
     handleDelete(status: number, response: string, id: string): void;
 }
 
+interface PUTResponseListener {
+    handlePut(status: number, response: string): void;
+}
+
 type DeleteRequest = {
     id: string;
 }
@@ -40,6 +44,32 @@ class MyFramework {
         return <HTMLElement>evt.target;
     }
 
+    // request(url: string, method: string, body: any?, success: (...any) => void, error: (...any) => void) {
+    //     this.xhr.onreadystatechange = function () {
+    //         //0	UNINITIALIZED	todavía no se llamó a open().
+    //         //1	LOADING	todavía no se llamó a send().
+    //         //2	LOADED	send() ya fue invocado, y los encabezados y el estado están disponibles.
+    //         //3	INTERACTIVE	Descargando; responseText contiene información parcial.
+    //         //4	COMPLETED	La operación está terminada.
+    //         if (this.readyState == 4) {
+    //             if (this.status == 200) {
+    //                 success(this.status, this.responseText);
+    //             } else {
+    //                 error(this.status, this.responseText);
+    //             }
+    //         }
+    //     };
+
+    //     this.xhr.open(method, url);
+        
+    //     this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    //     if(body) {
+    //         this.xhr.send(null);
+    //     } else {
+    //         this.xhr.send(JSON.stringify(body));
+    //     }
+    // }
+
     requestGET(url: string, listener: GETResponseListener): void {
 
 
@@ -48,7 +78,7 @@ class MyFramework {
                 if (this.status == 200) {
                     listener.handleGETResponse(this.status, this.responseText);
                 } else {
-                    listener.handleGETResponse(this.status, null);
+                    console.log("no devices found");
                 }
             }
         };
@@ -107,10 +137,29 @@ class MyFramework {
         this.xhr.send(JSON.stringify(data));
     }
 
+
+    requestPUT(url: string, data: DeviceInt, listener: PUTResponseListener) {
+        this.xhr.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    listener.handlePut(this.status, this.responseText);
+                } else {
+                    console.log("not found / error");
+                    listener.handlePut(this.status, this.responseText);
+                }
+            }
+        };
+  
+
+        this.xhr.open('PUT', url);
+
+        // envio JSON en body de request (Usar con NODEJS)
+        this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        this.xhr.send(JSON.stringify(data));
+    }
     
 
     configEventLister(event: string, id: string, listener: EventListenerObject): void {
         let b: HTMLElement = document.getElementById(id);
         b.addEventListener(event, listener);
     }
-}

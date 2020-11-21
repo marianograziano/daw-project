@@ -90,3 +90,8 @@ typings/
 src/front/js/
 
 db/data/
+src/front/ts (copia)/Main.ts
+src/front/ts (copia)/MyFramework.ts
+src/front/ts (copia)/tsconfig.json
+src/front/ts (copia)/User.ts
+src/front/ts (copia)/ViewMainPage.ts
