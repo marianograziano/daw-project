@@ -37,6 +37,7 @@ app.get('/dispositivos', function (req, res, next) {
     });
 });
 
+
 app.get('/dispositivos/:id', function (req, res, next) {
     console.log("Contenido del body by id", req.body);
         conexionMysql.query('Select * from Devices where id=?',[req.params.id],function (err, respuesta) {
@@ -55,7 +56,7 @@ app.post('/dispositivos/estados', function (req, res, next) {
             res.send(err).status(400);
             return;
         }
-        res.send("Se actualizó correctamente: " + JSON.stringify(respuesta)).status(200);
+        res.send("Se actualizó correctamente aa: " + JSON.stringify(respuesta)).status(200);
     });
 });
 
@@ -71,8 +72,10 @@ app.del('/dispositivos', function (req, res, next) {
 });
 
 app.put('/dispositivos/:id', function (req, res, next) {
-    console.log("Update body post/dispositivos/ ->", req.body);
-    conexionMysql.query('Update Devices set state=? where id=?', [req.body.state, req.body.id], function (err, respuesta) {
+    console.log("Update body put/dispositivos/ ->", req.body);
+    console.log("Querys->", [req.body.name,req.body.description,req.body.state,req.body.type,req.body.id]);
+    // UPDATE `Devices` SET `name` = 'Persiana 21111', `description` = 'Persiana de la cocina1', `state` = '11', `type` = '11' WHERE `Devices`.`id` = 5
+    conexionMysql.query('UPDATE Devices SET name = ?, description = ?, type = ?  WHERE id = ?', [req.body.name,req.body.description,req.body.type,req.body.id], function (err, respuesta) {
         if (err) {
             res.send(err).status(400);
             return;

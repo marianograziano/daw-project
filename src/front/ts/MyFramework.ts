@@ -137,6 +137,7 @@ class MyFramework {
 
 
     requestPUT(url: string, data: DeviceInt, listener: PUTResponseListener) {
+        console.log('data que va al request',data)
         this.xhr.onreadystatechange = function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {

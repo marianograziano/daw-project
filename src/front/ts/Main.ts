@@ -69,7 +69,7 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
                 break;
             }              
             case "edi": {
-                console.log('entro al case');
+                //console.log('entro al case, essto trajo ', (console.log(this.devices));
                 const device = this.devices.find(d =>  `${d.id}` === id);//funca pero con es6 https://dev.to/wangonya/finding-an-element-in-the-array-the-es5-es6-and-es7-way-7cl
                 this.view.createModal(device,this.saveEditedDevice, this);
                 break;
@@ -82,7 +82,7 @@ class Main implements EventListenerObject, GETResponseListener, POSTResponseList
         
         console.log("device a salvar -> ", device);
         main.devices = main.devices.map(d => d.id === device.id ? device : d);
-        main.myf.requestPUT("http://localhost:8000/dispositivos/:id",device,main);
+        main.myf.requestPUT("http://localhost:8000/dispositivos/${device.id}",device,main);
         modal.remove();
     }
 
