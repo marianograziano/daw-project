@@ -88,6 +88,7 @@ class MyFramework {
     }
 
     requestPOST(url: string, data: UpdateRequest, listener: POSTResponseListener): void {
+        console.log(data)
         this.xhr.onreadystatechange = function () {
 
             if (this.readyState == 4) {

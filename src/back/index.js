@@ -60,6 +60,18 @@ app.post('/dispositivos/estados', function (req, res, next) {
     });
 });
 
+app.post('/dispositivos/', function (req, res, next) {
+    console.log("Update body post/dispositivos/estados ->", req.body);
+    conexionMysql.query('INSERT INTO Devices(state, name, description, type) VALUES  (?,?,?,?)', [req.body.state,req.body.name,req.body.description,req.body.type,req.body.id], function (err, respuesta) {
+    
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send("Se actualizó correctamente aa: " + JSON.stringify(respuesta)).status(200);
+    });
+});
+
 app.del('/dispositivos', function (req, res, next) {
     console.log("delete body ->", req.body);
     conexionMysql.query('delete from Devices where id=?', [req.body.id], function (err, respuesta) {
@@ -74,7 +86,6 @@ app.del('/dispositivos', function (req, res, next) {
 app.put('/dispositivos/:id', function (req, res, next) {
     console.log("Update body put/dispositivos/ ->", req.body);
     console.log("Querys->", [req.body.name,req.body.description,req.body.state,req.body.type,req.body.id]);
-    // UPDATE `Devices` SET `name` = 'Persiana 21111', `description` = 'Persiana de la cocina1', `state` = '11', `type` = '11' WHERE `Devices`.`id` = 5
     conexionMysql.query('UPDATE Devices SET name = ?, description = ?, type = ?  WHERE id = ?', [req.body.name,req.body.description,req.body.type,req.body.id], function (err, respuesta) {
         if (err) {
             res.send(err).status(400);
@@ -84,6 +95,17 @@ app.put('/dispositivos/:id', function (req, res, next) {
     });
 });
 
+app.put('/dispositivos', function (req, res, next) {
+    console.log("Update body put/dispositivos/ ->", req.body);
+    console.log("Querys->", [req.body.name,req.body.description,req.body.state,req.body.type,req.body.id]);
+    conexionMysql.query('UPDATE Devices SET name = ?, description = ?, type = ?  WHERE id = ?', [req.body.name,req.body.description,req.body.type,req.body.id], function (err, respuesta) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send("Se actualizó correctamente: " + JSON.stringify(respuesta)).status(200);
+    });
+});
 //app.get('/dispositivos/:id', function(req, res, next) {
 //    let datosFiltrados= datos.filter((itemDeLaLista)=>{
 //        return itemDeLaLista.id==req.params.id

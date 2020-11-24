@@ -151,9 +151,7 @@ class ViewMainPage {
                                           Off
                                           <input id="dev_${
                                             dev.id
-                                          }" type="checkbox" ${
-          dev.state === 1 ? "checked" : ""
-        }> <!-- id para controlar el switch --!>
+                                          }" type="checkbox" > <!-- id para controlar el switch --!>
                                           <span class="lever"></span>
                                           On
                                           </label>
